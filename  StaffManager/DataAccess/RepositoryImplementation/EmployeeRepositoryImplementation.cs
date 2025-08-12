@@ -227,7 +227,13 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
         }
     }
     
-    public async Task<List<EmployeeModel>> GetByCompanyIdAsync(int companyId)
+    
+    /// <summary>
+    /// defines a method to retrieve employees by their company ID.
+    /// </summary>
+    /// <param name="companyId"></param>
+    /// <returns></returns>
+    public async Task<List<EmployeeModel>> GetEmployeesByCompanyIdAsync(int companyId)
     {
         var employees = new List<EmployeeModel>();
 

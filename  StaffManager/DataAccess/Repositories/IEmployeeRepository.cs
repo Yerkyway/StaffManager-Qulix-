@@ -9,4 +9,6 @@ public interface IEmployeeRepository
     Task<int> CreateEmployeeAsync(EmployeeModel employee);
     Task UpdateEmployeeAsync(EmployeeModel employee);
     Task DeleteEmployeeAsync(int id);
+    
+    Task<List<EmployeeModel>> GetEmployeesByCompanyIdAsync(int companyId);
 }

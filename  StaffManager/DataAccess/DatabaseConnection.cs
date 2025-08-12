@@ -2,7 +2,7 @@
 
 namespace StaffManager.DataAccess;
 
-public class DatabaseConnection
+public class DatabaseConnection 
 {
     private readonly string _connectionString;
     

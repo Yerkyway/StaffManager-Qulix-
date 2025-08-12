@@ -200,13 +200,13 @@ public class CompanyRepositoryImplementation : ICompanyRepository
             }
         }
     }
-    
+
     /// <summary>
     /// Checks if a company has any employees.
     /// </summary>
     /// <param name="companyId"></param>
     /// <returns></returns>
-    public async Task<bool> HasEmployeeAsync(int companyId)
+    public async Task<bool> HasEmployeesAsync(int companyId)
     {
         const string sql = @"
             SELECT COUNT(*) 
@@ -226,5 +226,5 @@ public class CompanyRepositoryImplementation : ICompanyRepository
                 return count > 0;
             }
         }
-    } 
+    }
 }

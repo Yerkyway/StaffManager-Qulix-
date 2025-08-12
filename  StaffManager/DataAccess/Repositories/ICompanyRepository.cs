@@ -9,4 +9,6 @@ public interface ICompanyRepository
     Task<int> createCompanyAsync(CompanyModel company);
     Task UpdateCompanyAsync(CompanyModel company);
     Task DeleteCompanyAsync(int id);
+    
+    Task<bool> HasEmployeesAsync(int companyId);
 }

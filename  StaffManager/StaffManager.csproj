@@ -8,10 +8,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     </ItemGroup>
 
