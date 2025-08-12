@@ -16,5 +16,6 @@ public class EmployeeModel
     public string LastName { get; set; }
     public Position Position { get; set; }
     public DateTime HireDate { get; set; }
+    public int CompanyId { get; set; }
     public CompanyModel Company { get; set; }
 }
