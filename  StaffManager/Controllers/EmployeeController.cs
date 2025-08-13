@@ -75,49 +75,56 @@ public class EmployeeController : Controller
     [HttpGet]
     public async Task<IActionResult> Create()
     {
-        PopulateDropdownAsync();
         var employee = new EmployeeModel
         {
             HireDate = DateTime.Today
         };
-
+        await PopulateDropdownAsync();
         return View(employee);
     }
 
-    /// <summary>
-    /// Handles the submission of the form to create a new employee.
-    /// </summary>
-    /// <param name="employee"></param>
-    /// <returns></returns>
-    [HttpPost, ActionName("Create")]
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EmployeeModel employee)
     {
+        await PopulateDropdownAsync(employee.CompanyId);
+
+        // Add the custom validation like in your Update method
+        var (isValid, errors) = await _employeeService.ValidateEmployeeAsync(employee);
+        if (!isValid)
+        {
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError("", error);
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            // Add debugging to see what validation errors occur
+            foreach (var modelError in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine($"Validation Error: {modelError.ErrorMessage}");
+            }
+            return View(employee);
+        }
+
         try
         {
-            var (isValid, errorMessage) = await _employeeService.ValidateEmployeeAsync(employee);
-            if (!isValid)
-            {
-                foreach (var error in errorMessage)
-                {
-                    ModelState.AddModelError("", error);
-                }
-            }
-
-            if (ModelState.IsValid)
-            {
-                var employeeId = await _employeeService.CreateEmployeeAsync(employee);
-                TempData["SuccessMessage"] = "Employee created successfully.";
-                return RedirectToAction(nameof(Home));
-            }
+            await _employeeService.CreateEmployeeAsync(employee);
+            TempData["SuccessMessage"] = "Employee created successfully.";
+            return RedirectToAction(nameof(Home));
         }
         catch (Exception e)
         {
-            ModelState.AddModelError("", "An error occurred while creating the employee: " + e.Message);
+            Console.WriteLine($"Error creating employee: {e.Message}");
+            ModelState.AddModelError("", $"Error creating employee: {e.Message}");
+            return View(employee);
         }
-        
-        PopulateDropdownAsync(employee.CompanyId.ToString());
-        return View(employee);
     }
+
+
 
     /// <summary>
     /// Populates the dropdown list of companies for the employee form.
@@ -140,7 +147,9 @@ public class EmployeeController : Controller
                 return NotFound("Employee not found.");
             }
             
-            PopulateDropdownAsync(employee.CompanyId.ToString());
+            
+            await PopulateDropdownAsync(employee.CompanyId);
+
             return View(employee);
         }
         catch (Exception e)
@@ -156,7 +165,8 @@ public class EmployeeController : Controller
     /// <param name="id"></param>
     /// <param name="employee"></param>
     /// <returns></returns>
-    [HttpPost, ActionName("Update")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(int id, EmployeeModel employee)
     {
         if (id!=employee.Id)
@@ -187,7 +197,9 @@ public class EmployeeController : Controller
             ModelState.AddModelError("", "An error occurred while updating the employee: " + e.Message);
         }
         
-        PopulateDropdownAsync(employee.CompanyId.ToString());
+
+        await PopulateDropdownAsync(employee.CompanyId);
+
         return View(employee);
     }
 
@@ -253,9 +265,33 @@ public class EmployeeController : Controller
     /// Populates the dropdown list of legal forms for the company in the employee form.
     /// </summary>
     /// <param name="selectedValue"></param>
-    private async Task PopulateDropdownAsync(string? selectedValue = null)
+    private async Task PopulateDropdownAsync(int selectedValue = 0) // теперь non-nullable
     {
-        var companies = await _companyService.GetAllCompaniesAsync();
-        ViewBag.Companies = new SelectList(companies, "Id", "Name", selectedValue);
+        var companies = await _companyService.GetAllCompaniesAsync() ?? new List<CompanyModel>();
+
+        var selectList = companies
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name,
+                Selected = c.Id == selectedValue
+            })
+            .ToList();
+
+        // Добавляем первый элемент
+        selectList.Insert(0, new SelectListItem
+        {
+            Value = "0", // default "empty" option
+            Text = "-- Выберите компанию --",
+            Selected = selectedValue == 0
+        });
+
+        ViewBag.Companies = selectList;
     }
+
+
+
+
+
+
 }

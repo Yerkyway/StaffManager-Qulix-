@@ -22,7 +22,10 @@
             <td>@company.LegalForm</td>
             <td>
                 <a class="btn btn-sm btn-warning" href="/Company/Update/@company.Id">Edit</a>
-                <a class="btn btn-sm btn-danger" href="/Company/Delete/@company.Id">Delete</a>
+                <form asp-action="Delete" asp-route-id="@company.Id" method="post" style="display:inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                </form>
             </td>
         </tr>
     }

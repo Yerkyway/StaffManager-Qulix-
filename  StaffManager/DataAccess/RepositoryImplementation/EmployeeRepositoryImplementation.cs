@@ -31,11 +31,11 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
         var employees = new List<EmployeeModel>();
 
         const string sql = @"
-            SELECT e.Id, e.FirstName, e.LastName, e.Email, 
-                   e.PhoneNumber, e.CompanyId, c.Name as CompanyName
-            FROM Employees e
-            LEFT JOIN Companies c ON e.CompanyId = c.Id
-            ORDER BY e.LastName";
+    SELECT e.Id, e.FirstName, e.MiddleName, e.LastName, 
+           e.Position, e.HireDate, e.CompanyId, c.Name as CompanyName, c.LegalForm
+    FROM Employees e
+    LEFT JOIN Companies c ON e.CompanyId = c.Id
+    ORDER BY e.LastName";
 
         using (var connection = _databaseConnection.getConnection())
         {
@@ -83,11 +83,11 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
         EmployeeModel employee = null;
 
         const string sql = @"
-            SELECT e.Id, e.FirstName, e.MiddleName, e.LastName, 
-                   e.Position, e.HireDate, e.CompanyId, c.Name as CompanyName
-            FROM Employees e
-            LEFT JOIN Companies c ON e.CompanyId = c.Id
-            WHERE e.Id = @Id";
+    SELECT e.Id, e.FirstName, e.MiddleName, e.LastName, 
+           e.Position, e.HireDate, e.CompanyId, c.Name as CompanyName, c.LegalForm
+    FROM Employees e
+    LEFT JOIN Companies c ON e.CompanyId = c.Id
+    WHERE e.Id = @Id";
 
         using (var connection = _databaseConnection.getConnection())
         {
@@ -156,9 +156,13 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
                 command.Parameters.Add(new SqlParameter("@HireDate", SqlDbType.DateTime)
                     { Value = employee.HireDate });
                 command.Parameters.Add(new SqlParameter("@CompanyId", SqlDbType.Int)
-                    { Value = employee.CompanyId });
-
+                    { Value = employee.CompanyId});
+                
+                
+                Console.WriteLine($"Inserting Employee: {employee.FirstName} {employee.LastName}, Position={employee.Position}, CompanyId={employee.CompanyId}");
                 var result = await command.ExecuteScalarAsync();
+                Console.WriteLine($"Inserted ID: {result}");
+
                 return Convert.ToInt32(result);
             }
         }

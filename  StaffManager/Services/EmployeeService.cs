@@ -186,7 +186,8 @@ public class EmployeeService
         if (string.IsNullOrWhiteSpace(employee.FirstName))
         {
             errors.Add("Имя сотрудника не может быть пустым");
-        } else if (employee.FirstName.Trim().Length<2 || employee.FirstName.Trim().Length>50)
+        } 
+        else if (employee.FirstName.Trim().Length < 2 || employee.FirstName.Trim().Length > 50)
         {
             errors.Add("Имя сотрудника должно быть от 2 до 50 символов");
         }
@@ -194,28 +195,31 @@ public class EmployeeService
         if (string.IsNullOrWhiteSpace(employee.LastName))
         {
             errors.Add("Фамилия сотрудника не может быть пустой");
-        } else if (employee.LastName.Trim().Length<2 || employee.LastName.Trim().Length>50)
+        } 
+        else if (employee.LastName.Trim().Length < 2 || employee.LastName.Trim().Length > 50)
         {
             errors.Add("Фамилия сотрудника должна быть от 2 до 50 символов");
+        }
+
+        if (!Enum.IsDefined(typeof(Position), employee.Position) || (int)employee.Position == 0)
+        {
+            errors.Add("Указана некорректная должность");
         }
 
         if (employee.HireDate == default)
         {
             errors.Add("Дата найма сотрудника не может быть пустой");
-        } else if (employee.HireDate.Date > DateTime.Now)
+        } 
+        else if (employee.HireDate.Date > DateTime.Now)
         {
             errors.Add("Дата найма сотрудника не может быть в будущем");
-        } else if (employee.HireDate.Date < DateTime.Now.AddYears(-50).Date)
+        } 
+        else if (employee.HireDate.Date < DateTime.Now.AddYears(-50).Date)
         {
             errors.Add("Дата найма сотрудника не может быть более 50 лет назад");
         }
 
-        if (Enum.IsDefined(typeof(Position), employee.Position))
-        {
-            errors.Add("Указана некорректная должность");
-        }
-
-        if (employee.CompanyId <=0)
+        if (employee.CompanyId <= 0)
         {
             errors.Add("Необходимо выбрать компанию");
         }
@@ -227,7 +231,8 @@ public class EmployeeService
                 errors.Add($"Компания с ID {employee.CompanyId} не найдена");
             }
         }
-        
+
+
         return (errors.Count == 0, errors);
     }
     

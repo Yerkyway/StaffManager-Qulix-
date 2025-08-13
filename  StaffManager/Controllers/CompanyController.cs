@@ -81,7 +81,7 @@ public class CompanyController : Controller
     /// </summary>
     /// <param name="company"></param>
     /// <returns></returns>
-    [HttpPost, ActionName("Create")]
+    [HttpPost]
     public async Task<IActionResult> Create(CompanyModel company)
     {
         try
@@ -147,7 +147,8 @@ public class CompanyController : Controller
     /// <param name="id"></param>
     /// <param name="company"></param>
     /// <returns></returns>
-    [HttpPost, ActionName("Update")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Update(int id, CompanyModel company)
     {
         if (id!=company.Id)
@@ -181,36 +182,6 @@ public class CompanyController : Controller
         PopulateLegalFormsOfCompany(company.LegalForm);
         return View(company);
     }
-
-    /// <summary>
-    /// Displays the confirmation page for deleting a company by its ID.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [HttpGet]
-    public async Task<IActionResult> Delete(int id)
-    {
-        if (id<=0)
-        {
-            return BadRequest();
-        }
-
-        try
-        {
-            var company = await _companyService.GetCompanyByIdAsync(id);
-            if (company == null)
-            {
-                return NotFound("Company not found.");
-            }
-            
-            return View(company);
-        }
-        catch (Exception e)
-        {
-            TempData["ErrorMessage"] = "An error occurred while loading the company: " + e.Message;
-            return RedirectToAction(nameof(Home));
-        }
-    }
     
     /// <summary>
     /// Handles the submission of the form to delete a company by its ID.
@@ -218,7 +189,7 @@ public class CompanyController : Controller
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {

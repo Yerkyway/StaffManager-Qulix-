@@ -29,12 +29,12 @@ public class CompanyRepositoryImplementation : ICompanyRepository
         var companies = new List<CompanyModel>();
         
         const string sql = @"
-            SELECT c.Id, c.Name, c.LegalForm, 
-                   count(e.Id) as EmployeeCount 
-            FROM Companies c
-            LEFT JOIN Employees e on c.Id = e.CompanyId
-            GROUP BY c.Id, c.Name, c.LegalForm
-            ORDER BY c.Name";
+    SELECT c.CompanyId, c.Name, c.LegalForm, 
+           COUNT(e.Id) AS NumberOfEmployees
+    FROM Companies c
+    LEFT JOIN Employees e ON c.CompanyId = e.CompanyId
+    GROUP BY c.CompanyId, c.Name, c.LegalForm
+    ORDER BY c.Name";
 
         await using var connection = _databaseConnection.getConnection();
         await connection.OpenAsync();
@@ -45,7 +45,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
         {
             companies.Add(new CompanyModel
             {
-                Id = reader.GetInt32("Id"),
+                Id = reader.GetInt32("CompanyId"),  
                 Name = reader.GetString("Name"),
                 LegalForm = reader.GetString("LegalForm"),
                 NumberOfEmployees = reader.GetInt32("NumberOfEmployees")
@@ -64,14 +64,14 @@ public class CompanyRepositoryImplementation : ICompanyRepository
     public async Task<CompanyModel> GetCompanyByIdAsync(int id)
     {
         CompanyModel company = null;
-        
+
         const string sql = @"
-            SELECT c.Id, c.Name, c.LegalForm, 
-                   count(e.Id) as EmployeeCount 
-            FROM Companies c
-            LEFT JOIN Employees e on c.Id = e.CompanyId
-            WHERE c.Id = @Id
-            GROUP BY c.Id, c.Name, c.LegalForm";
+        SELECT c.CompanyId, c.Name, c.LegalForm, 
+               COUNT(e.Id) AS NumberOfEmployees
+        FROM Companies c
+        LEFT JOIN Employees e ON c.CompanyId = e.CompanyId
+        WHERE c.CompanyId = @CompanyId
+        GROUP BY c.CompanyId, c.Name, c.LegalForm";
 
         using (var connection = _databaseConnection.getConnection())
         {
@@ -79,7 +79,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
 
             using (var command = new SqlCommand(sql, connection))
             {
-                command.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = id });
+                command.Parameters.Add(new SqlParameter("@CompanyId", SqlDbType.Int) { Value = id });
 
                 using (var reader = await command.ExecuteReaderAsync())
                 {
@@ -87,7 +87,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
                     {
                         company = new CompanyModel
                         {
-                            Id = reader.GetInt32("Id"),
+                            Id = reader.GetInt32("CompanyId"),
                             Name = reader.GetString("Name"),
                             LegalForm = reader.GetString("LegalForm"),
                             NumberOfEmployees = reader.GetInt32("NumberOfEmployees")
@@ -99,6 +99,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
 
         return company;
     }
+
     
     /// <summary>
     /// Creates a new company in the database.
@@ -130,7 +131,8 @@ public class CompanyRepositoryImplementation : ICompanyRepository
                     { Value = company.LegalForm ?? (object)DBNull.Value });
                 
                 var result = await command.ExecuteScalarAsync();
-                return Convert.ToInt32(result);
+                return result != null ? Convert.ToInt32(decimal.Parse(result.ToString())) : 0;
+
             }
         }
     }
@@ -150,7 +152,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
         const string sql = @"
             UPDATE Companies
             SET Name = @Name, LegalForm = @LegalForm
-            WHERE Id = @Id";
+            WHERE CompanyId = @CompanyId";
 
         using (var connection = _databaseConnection.getConnection())
         {
@@ -158,7 +160,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
 
             using (var command = new SqlCommand(sql, connection))
             {
-                command.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) 
+                command.Parameters.Add(new SqlParameter("@CompanyId", SqlDbType.Int) 
                     { Value = company.Id });
                 command.Parameters.Add(new SqlParameter("@Name", SqlDbType.NVarChar, 200)
                     { Value = company.Name ?? (object)DBNull.Value });
@@ -179,7 +181,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
     {
         const string sql = @"
             DELETE FROM Companies
-            WHERE Id = @Id";
+            WHERE CompanyId = @CompanyId";
 
         using (var connection = _databaseConnection.getConnection())
         {
@@ -187,7 +189,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
 
             using (var command = new SqlCommand(sql, connection))
             {
-                command.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int)
+                command.Parameters.Add(new SqlParameter("@CompanyId", SqlDbType.Int)
                     {Value = id});
 
                 await command.ExecuteNonQueryAsync();
