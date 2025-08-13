@@ -253,13 +253,9 @@ public class EmployeeController : Controller
     /// Populates the dropdown list of legal forms for the company in the employee form.
     /// </summary>
     /// <param name="selectedValue"></param>
-    private void PopulateDropdownAsync(string? selectedValue = null)
+    private async Task PopulateDropdownAsync(string? selectedValue = null)
     {
-        var LegalForms = new List<string>
-        {
-            "ООО", "ЗАО", "ОАО", "ИП", "АО", "ПАО", "НКО", "ГУП", "МУП"
-        };
-
-        ViewBag.LegalForms = new SelectList(LegalForms, selectedValue);
+        var companies = await _companyService.GetAllCompaniesAsync();
+        ViewBag.Companies = new SelectList(companies, "Id", "Name", selectedValue);
     }
 }

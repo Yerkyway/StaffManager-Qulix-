@@ -1,0 +1,41 @@
+﻿@model StaffManager.Models.EmployeeModel
+
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="@(Model.Id == 0 ? "Create" : "Update")" method="post">
+    <div class="mb-3">
+        <label for="FirstName" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName" required />
+    </div>
+    <div class="mb-3">
+        <label for="LastName" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName" required />
+    </div>
+    <div class="mb-3">
+        <label for="Position" class="form-label">Position</label>
+        <select class="form-select" id="Position" name="Position">
+            @foreach (var position in Enum.GetValues(typeof(StaffManager.Models.Position)))
+            {
+                <option value="@position" @(position.Equals(Model.Position) ? "selected" : "")>@position</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="CompanyId" class="form-label">Company</label>
+        <select class="form-select" id="CompanyId" name="CompanyId">
+            @foreach (var company in (IEnumerable<SelectListItem>)ViewBag.Companies)
+            {
+            <option value="@company.Value" @(company.Selected ? "selected" : "")>@company.Text</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label for="HireDate" class="form-label">Hire Date</label>
+        <input type="date" class="form-control" id="HireDate" name="HireDate" value="@Model.HireDate.ToString("yyyy-MM-dd")" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

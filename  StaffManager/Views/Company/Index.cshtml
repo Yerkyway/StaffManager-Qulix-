@@ -1,0 +1,30 @@
+﻿@model IEnumerable<StaffManager.Models.CompanyModel>
+
+@{
+    ViewData["Title"] = "Companies";
+}
+
+<h1>Companies</h1>
+<a class="btn btn-primary mb-3" href="/Company/Create">Add New Company</a>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Legal Form</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var company in Model)
+    {
+        <tr>
+            <td>@company.Name</td>
+            <td>@company.LegalForm</td>
+            <td>
+                <a class="btn btn-sm btn-warning" href="/Company/Update/@company.Id">Edit</a>
+                <a class="btn btn-sm btn-danger" href="/Company/Delete/@company.Id">Delete</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
