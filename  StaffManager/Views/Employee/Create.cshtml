@@ -44,12 +44,12 @@ ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
     </div>
 
     <div class="mb-3">
-        <label asp-for="CompanyId" class="form-label"></label>
-        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies"></select>
+        <label asp-for="CompanyId" class="form-label">Company</label>
+        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies">
+            <!-- Remove this line since we're adding the default option in the controller -->
+        </select>
         <span asp-validation-for="CompanyId" class="text-danger"></span>
     </div>
-
-
 
     <div class="mb-3">
         <label asp-for="HireDate"></label>

@@ -24,7 +24,14 @@
             <td>@employee.Company.Name</td>
             <td>
                 <a class="btn btn-sm btn-warning" href="/Employee/Update/@employee.Id">Edit</a>
-                <a class="btn btn-sm btn-danger" href="/Employee/Delete/@employee.Id">Delete</a>
+                <form asp-action="Delete" method="post" style="display: inline;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@employee.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to delete this employee?')">
+                        Delete
+                    </button>
+                </form>
             </td>
         </tr>
     }

@@ -1,14 +1,14 @@
 ﻿@using StaffManager.Models
 @model StaffManager.Models.EmployeeModel
 @{
-ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
+ViewData["Title"] = "Edit Employee";
 }
 
 <h1>@ViewData["Title"]</h1>
 
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
-<form asp-action="Create" method="post">
+<form asp-action="Update" method="post">
     @Html.AntiForgeryToken()
 
     <input asp-for="Id" type="hidden" />
@@ -44,12 +44,12 @@ ViewData["Title"] = Model.Id == 0 ? "Create Employee" : "Edit Employee";
     </div>
 
     <div class="mb-3">
-        <label asp-for="CompanyId" class="form-label"></label>
-        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies"></select>
+        <label asp-for="CompanyId" class="form-label">Company</label>
+        <select asp-for="CompanyId" class="form-select" asp-items="ViewBag.Companies">
+            <option value="">-- Select Company --</option>
+        </select>
         <span asp-validation-for="CompanyId" class="text-danger"></span>
-
     </div>
-    
 
     <div class="mb-3">
         <label asp-for="HireDate"></label>

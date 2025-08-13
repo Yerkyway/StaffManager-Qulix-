@@ -1,6 +1,5 @@
 ﻿-- Создание базы данных
 CREATE DATABASE EmployeeRegistrationDB;
-USE EmployeeRegistrationDB;
 
 -- Таблица компаний
 CREATE TABLE Companies (

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StaffManager.Models;
 
@@ -34,9 +35,7 @@ public class EmployeeModel
     
     [Required(ErrorMessage = "Company is required.")]
     [Range(1, int.MaxValue, ErrorMessage = "Please select a valid company.")]
-    public int CompanyId { get; set; } // делаем non-nullable
-
-
-
-    public CompanyModel Company { get; set; }
+    public int CompanyId { get; set; } 
+    [ForeignKey(nameof(CompanyId))]
+    public CompanyModel? Company { get; set; }
 }

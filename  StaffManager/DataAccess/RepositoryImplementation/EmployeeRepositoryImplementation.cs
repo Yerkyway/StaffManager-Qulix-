@@ -34,7 +34,7 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
     SELECT e.Id, e.FirstName, e.MiddleName, e.LastName, 
            e.Position, e.HireDate, e.CompanyId, c.Name as CompanyName, c.LegalForm
     FROM Employees e
-    LEFT JOIN Companies c ON e.CompanyId = c.Id
+    LEFT JOIN Companies c ON e.CompanyId = c.CompanyId
     ORDER BY e.LastName";
 
         using (var connection = _databaseConnection.getConnection())
@@ -58,7 +58,7 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
                             CompanyId = reader.GetInt32("CompanyId"),
                             Company = new CompanyModel
                             {
-                                Id = reader.GetInt32("CompanyId"),
+                                Id  = reader.GetInt32("CompanyId"),
                                 Name = reader.GetString("CompanyName"),
                                 LegalForm = reader.GetString("LegalForm")
                             }
@@ -86,7 +86,7 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
     SELECT e.Id, e.FirstName, e.MiddleName, e.LastName, 
            e.Position, e.HireDate, e.CompanyId, c.Name as CompanyName, c.LegalForm
     FROM Employees e
-    LEFT JOIN Companies c ON e.CompanyId = c.Id
+    LEFT JOIN Companies c ON e.CompanyId = c.CompanyId
     WHERE e.Id = @Id";
 
         using (var connection = _databaseConnection.getConnection())
@@ -113,7 +113,7 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
                             CompanyId = reader.GetInt32("CompanyId"),
                             Company = new CompanyModel
                             {
-                                Id = reader.GetInt32("CompanyId"),
+                                Id =  reader.GetInt32("CompanyId"),
                                 Name = reader.GetString("CompanyName"),
                                 LegalForm = reader.GetString("LegalForm")
                             }
@@ -272,7 +272,7 @@ public class EmployeeRepositoryImplementation : IEmployeeRepository
                             CompanyId = reader.GetInt32("CompanyId"),
                             Company = new CompanyModel
                             {
-                                Id = reader.GetInt32("CompanyId"),
+                                Id =  reader.GetInt32("CompanyId"),
                                 Name = reader.GetString("CompanyName"),
                                 LegalForm = reader.GetString("LegalForm")
                             }

@@ -88,7 +88,7 @@ public class EmployeeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(EmployeeModel employee)
     {
-        await PopulateDropdownAsync(employee.CompanyId);
+        await PopulateDropdownAsync(employee.CompanyId.ToString());
 
         // Add the custom validation like in your Update method
         var (isValid, errors) = await _employeeService.ValidateEmployeeAsync(employee);
@@ -148,7 +148,7 @@ public class EmployeeController : Controller
             }
             
             
-            await PopulateDropdownAsync(employee.CompanyId);
+            await PopulateDropdownAsync(employee.CompanyId.ToString());
 
             return View(employee);
         }
@@ -198,39 +198,9 @@ public class EmployeeController : Controller
         }
         
 
-        await PopulateDropdownAsync(employee.CompanyId);
+        await PopulateDropdownAsync(employee.CompanyId.ToString());
 
         return View(employee);
-    }
-
-    /// <summary>
-    /// Populates the dropdown list of companies for the employee form.
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
-    [HttpGet]
-    public async Task<IActionResult> Delete(int id)
-    {
-        if (id<=0)
-        {
-            return BadRequest();
-        }
-
-        try
-        {
-            var employee = await _employeeService.GetEmployeeByIdAsync(id);
-            if (employee==null)
-            {
-                return NotFound("Employee not found.");
-            }
-            
-            return View(employee);
-        }
-        catch (Exception e)
-        {
-            TempData["ErrorMessage"] = "An error occurred while loading the employee for deletion: " + e.Message;
-            return RedirectToAction(nameof(Home));
-        }
     }
 
     /// <summary>
@@ -239,7 +209,7 @@ public class EmployeeController : Controller
     /// <param name="id"></param>
     /// <returns></returns>
     [HttpPost, ActionName("Delete")]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         try
         {
@@ -265,28 +235,11 @@ public class EmployeeController : Controller
     /// Populates the dropdown list of legal forms for the company in the employee form.
     /// </summary>
     /// <param name="selectedValue"></param>
-    private async Task PopulateDropdownAsync(int selectedValue = 0) // теперь non-nullable
+    private async Task PopulateDropdownAsync(string selectedValue = null)
     {
-        var companies = await _companyService.GetAllCompaniesAsync() ?? new List<CompanyModel>();
+        var companies = await _companyService.GetAllCompaniesAsync();
+        ViewBag.Companies = new SelectList(companies, "Id", "Name", selectedValue);
 
-        var selectList = companies
-            .Select(c => new SelectListItem
-            {
-                Value = c.Id.ToString(),
-                Text = c.Name,
-                Selected = c.Id == selectedValue
-            })
-            .ToList();
-
-        // Добавляем первый элемент
-        selectList.Insert(0, new SelectListItem
-        {
-            Value = "0", // default "empty" option
-            Text = "-- Выберите компанию --",
-            Selected = selectedValue == 0
-        });
-
-        ViewBag.Companies = selectList;
     }
 
 
