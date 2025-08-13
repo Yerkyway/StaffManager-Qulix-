@@ -33,7 +33,7 @@ public class CompanyService
     /// <summary>
     /// defines the method to get all companies.
     /// </summary>
-    public async Task<List<CompanyModel>> getAllCompaniesAsync()
+    public async Task<List<CompanyModel>> GetAllCompaniesAsync()
     {
         try
         {
@@ -48,7 +48,7 @@ public class CompanyService
     /// <summary>
     /// defines the method to get a company by its ID.
     /// </summary>
-    public async Task<CompanyModel> getCompanyByIdAsync(int id)
+    public async Task<CompanyModel> GetCompanyByIdAsync(int id)
     {
         if (id <= 0)
         {
@@ -69,7 +69,7 @@ public class CompanyService
     /// defines the method to create a company with validation of entered data.
     /// </summary>
     /// <param name="company"></param>
-    public async Task<int> createCompanyAsync(CompanyModel company)
+    public async Task<int> CreateCompanyAsync(CompanyModel company)
     {
         if (company==null)
         {
@@ -87,7 +87,7 @@ public class CompanyService
             company.Name = company.Name?.Trim();
             company.LegalForm = company.LegalForm?.Trim();
 
-            return await _companyRepository.createCompanyAsync(company);
+            return await _companyRepository.CreateCompanyAsync(company);
         }
         catch (Exception e)
         {
@@ -98,7 +98,7 @@ public class CompanyService
     /// <summary>
     /// defines the method to update a company with validation of entered data.
     /// </summary>
-    public async Task updatedCompanyAsync(CompanyModel company)
+    public async Task UpdateCompanyAsync(CompanyModel company)
     {
         if (company == null)
         {
@@ -140,7 +140,7 @@ public class CompanyService
     /// <param name="id"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public async Task<bool> deleteCompanyAsync(int id)
+    public async Task<bool> DeleteCompanyAsync(int id)
     {
         if (id<=0)
         {
@@ -221,34 +221,5 @@ public class CompanyService
         }
         
         return (errors.Count == 0, errors);
-    }
-    
-    /// <summary>
-    /// defines the method to get statistics about companies.
-    /// </summary>
-    public async Task<CompanyStatisticsModel> GetCompanyStatisticsAsync(int companyId)
-    {
-        try
-        {
-            var companies = await _companyRepository.GetAllCompaniesAsync();
-            var employees = await _employeeRepository.GetAllEmployeesAsync();
-            
-            return new CompanyStatisticsModel
-            {
-                TotalCompanies = companies.Count,
-                CompaniesWithEmployees = companies.Count(c => c.NumberOfEmployees > 0),
-                CompaniesWithoutEmployees = companies.Count(c => c.NumberOfEmployees == 0),
-                AverageEmployeesPerCompany = companies.Count > 0 ? (double)employees.Count / companies.Count : 0,
-                LargestCompanySize = companies.Count > 0 ? companies.Max(c => c.NumberOfEmployees) : 0,
-                MostCommonLegalForms = companies.GroupBy(c => c.LegalForm)
-                    .OrderByDescending(g => g.Count())
-                    .Take(3)
-                    .ToDictionary(g => g.Key, g => g.Count())
-            };
-        }
-        catch (Exception e)
-        {
-            throw new InvalidOperationException("Ошибка при получении статистики компаний", e);
-        }
     }
 }

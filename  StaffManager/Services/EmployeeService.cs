@@ -127,7 +127,7 @@ public class EmployeeService
     }
 
     /// <summary>
-    /// Удаление сотрудника по ID
+    /// deletes an employee by ID.
     /// </summary>
     public async Task<bool> DeleteEmployeeAsync(int id)
     {
@@ -171,7 +171,7 @@ public class EmployeeService
     }
     
     /// <summary>
-    /// Валидация данных сотрудника перед созданием или обновлением
+    /// validates the employee data.
     /// </summary>
     public async Task<(bool isValid, List<string> errors)> ValidateEmployeeAsync(EmployeeModel employee)
     {
@@ -229,35 +229,6 @@ public class EmployeeService
         }
         
         return (errors.Count == 0, errors);
-    }
-
-    public async Task<EmployeeStatisticsModel> GetEmployeeStatisticsAsync(int employeeId)
-    {
-        try
-        {
-            var employees = await _employeeRepository.GetAllEmployeesAsync();
-
-            return new EmployeeStatisticsModel
-            {
-                TotalEmployees = employees.Count,
-                EmployeesByPosition = employees
-                    .GroupBy(e => e.Position)
-                    .ToDictionary(g => g.Key.ToString(),
-                        g => g.Count()),
-                AverageWorkExperienceYears = employees.Count > 0
-                    ? employees.Average(e => (DateTime.Now - e.HireDate).Days / 365)
-                    : 0,
-                NewEmployeesThisYear = employees.Count(e => e.HireDate.Year == DateTime.Now.Year),
-                LongestWorkingEmployee = employees
-                    .OrderBy(e => e.HireDate)
-                    .FirstOrDefault()
-            };
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
     }
     
 }

@@ -36,26 +36,20 @@ public class CompanyRepositoryImplementation : ICompanyRepository
             GROUP BY c.Id, c.Name, c.LegalForm
             ORDER BY c.Name";
 
-        using (var connection = _databaseConnection.getConnection())
-        {
-            await connection.OpenAsync();
+        await using var connection = _databaseConnection.getConnection();
+        await connection.OpenAsync();
 
-            using (var command = new SqlCommand(sql, connection))
+        await using var command = new SqlCommand(sql, connection);
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            companies.Add(new CompanyModel
             {
-                using (var reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        companies.Add(new CompanyModel
-                        {
-                            Id = reader.GetInt32("Id"),
-                            Name = reader.GetString("Name"),
-                            LegalForm = reader.GetString("LegalForm"),
-                            NumberOfEmployees = reader.GetInt32("NumberOfEmployees")
-                        });
-                    }
-                }
-            }
+                Id = reader.GetInt32("Id"),
+                Name = reader.GetString("Name"),
+                LegalForm = reader.GetString("LegalForm"),
+                NumberOfEmployees = reader.GetInt32("NumberOfEmployees")
+            });
         }
 
         return companies;
@@ -112,7 +106,7 @@ public class CompanyRepositoryImplementation : ICompanyRepository
     /// <param name="company"></param>
     /// <returns></returns>
     /// <exception cref="NotImplementedException"></exception>
-    public async Task<int> createCompanyAsync(CompanyModel company)
+    public async Task<int> CreateCompanyAsync(CompanyModel company)
     {
         if (company == null)
         {
